@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { combineStyles } from '@adminjs/design-system'
+import merge from 'lodash/merge'
 
 import ViewHelpers from '../backend/utils/view-helpers/view-helpers'
 import { initializeStore } from './store'
@@ -27,13 +28,13 @@ const html = async (
   const store = await initializeStore(admin, currentAdmin)
   const reduxState = store.getState()
 
-  const { branding, assets } = reduxState
+  const { branding, assets, theme: selectedTheme } = reduxState
 
   const scripts = ((assets && assets.scripts) || [])
     .map((s) => `<script src="${s}"></script>`)
   const styles = ((assets && assets.styles) || [])
     .map((l) => `<link rel="stylesheet" type="text/css" href="${l}">`)
-  const theme = combineStyles((branding.theme) || {})
+  const theme = combineStyles(merge({}, selectedTheme?.data, branding.theme))
   const faviconTag = getFaviconFromBranding(branding)
 
   return `
@@ -56,7 +57,9 @@ const html = async (
       <script src="${h.assetPath('design-system.bundle.js', assets)}"></script>
       <script src="${h.assetPath('app.bundle.js', assets)}"></script>
       <script src="${h.assetPath('components.bundle.js', assets)}"></script>
+      ${selectedTheme ? `<script src="${h.assetPath(`themes/${selectedTheme.id}/theme.bundle.js`, assets)}"></script>` : ''}
       ${styles.join('\n')}
+      ${selectedTheme ? `<link rel="stylesheet" type="text/css" href="${h.assetPath(`themes/${selectedTheme.id}/style.css`, assets)}">` : ''}
     </head>
     <body>
       <div id="app" />

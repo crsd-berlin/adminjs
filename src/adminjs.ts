@@ -20,7 +20,7 @@ import { combineTranslations, Locale } from './locale/config'
 import { locales } from './locale'
 import { TranslateFunctions, createFunctions } from './utils/translate-functions.factory'
 import { relativeFilePathResolver } from './utils/file-resolver'
-import { getComponentHtml } from './backend/utils'
+import { getComponentHtml, Router } from './backend/utils'
 import { ComponentLoader } from './backend/utils/component-loader'
 import { OverridableComponent } from './frontend'
 
@@ -125,6 +125,8 @@ class AdminJS {
 
     const resourcesFactory = new ResourcesFactory(this, global.RegisteredAdapters || [])
     this.resources = resourcesFactory.buildResources({ databases, resources })
+
+    this.addThemeAssets()
   }
 
   initI18n(): void {
@@ -352,6 +354,19 @@ class AdminJS {
     const name = componentName ?? `Component${this.__unsafe_componentIndex++}`
     this.__unsafe_staticComponentLoader.__unsafe_addWithoutChecks(name, src, 'bundle')
     return name
+  }
+
+  addThemeAssets() {
+    this.options.availableThemes?.forEach((theme) => {
+      Router.assets.push({
+        path: `/frontend/assets/themes/${theme.id}/theme.bundle.js`,
+        src: theme.bundlePath,
+      })
+      Router.assets.push({
+        path: `/frontend/assets/themes/${theme.id}/style.css`,
+        src: theme.stylePath,
+      })
+    })
   }
 
   private static __unsafe_componentIndex = 0

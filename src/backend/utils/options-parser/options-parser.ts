@@ -1,6 +1,6 @@
 import merge from 'lodash/merge'
 import AdminJS from '../../../adminjs'
-import { AdminJSOptions, Assets, BrandingOptions } from '../../../adminjs-options.interface'
+import { AdminJSOptions, Assets, BrandingOptions, ThemeConfig } from '../../../adminjs-options.interface'
 import { CurrentAdmin } from '../../../current-admin.interface'
 import ViewHelpers from '../view-helpers/view-helpers'
 
@@ -8,7 +8,7 @@ const defaultBranding: AdminJSOptions['branding'] = {
   companyName: 'Company',
   withMadeWithLove: true,
 }
-const defaultAssets = {
+const defaultAssets: Assets = {
   styles: [],
   scripts: [],
 }
@@ -43,6 +43,16 @@ export const getBranding = async (
   merged.logo = merged.logo !== undefined ? merged.logo : defaultLogo
 
   return merged
+}
+
+export const getTheme = async (
+  admin: AdminJS,
+  currentAdmin?: CurrentAdmin,
+): Promise<ThemeConfig | null> => {
+  const { availableThemes, defaultTheme } = admin.options
+  const themeId = currentAdmin?.theme ?? defaultTheme ?? availableThemes?.[0].id
+  const theme = availableThemes?.find((t) => t.id === themeId)
+  return theme ?? null
 }
 
 export const getFaviconFromBranding = (branding: BrandingOptions): string => {

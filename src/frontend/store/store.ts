@@ -20,7 +20,7 @@ import {
   INITIAL_ROUTE,
 } from './actions'
 
-import { Assets, BrandingOptions, VersionProps } from '../../adminjs-options.interface'
+import { Assets, BrandingOptions, ThemeConfig, VersionProps } from '../../adminjs-options.interface'
 import { PageJSON, ResourceJSON } from '../interfaces'
 import { DEFAULT_PATHS } from '../../constants'
 import { CurrentAdmin } from '../../current-admin.interface'
@@ -106,6 +106,17 @@ const assetsReducer = (state = {}, action: {
 }) => {
   switch (action.type) {
   case ASSETS_INITIALIZE:
+    return action.data
+  default: return state
+  }
+}
+
+const themeReducer = (state: ThemeConfig | null = null, action: {
+  type: string;
+  data: ThemeConfig | null;
+}) => {
+  switch (action.type) {
+  case 'THEME_INITIALIZE':
     return action.data
   default: return state
   }
@@ -215,6 +226,7 @@ export type ReduxState = {
   resources: Array<ResourceJSON>;
   branding: BrandingOptions;
   assets: Assets;
+  theme: ThemeConfig | null;
   paths: Paths;
   session: CurrentAdmin | null;
   dashboard: DashboardInState;
@@ -229,6 +241,7 @@ const reducer = combineReducers<ReduxState>({
   resources: resourcesReducer,
   branding: brandingReducer,
   assets: assetsReducer,
+  theme: themeReducer,
   paths: pathsReducer,
   session: sessionReducer,
   dashboard: dashboardReducer,
